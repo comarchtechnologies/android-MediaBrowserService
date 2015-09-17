@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/progressBar"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/tv_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_above="@+id/rl_navigation_cover"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="10dp"
+        android:progressDrawable="@drawable/custom_progress_bar" />
+
+    <RelativeLayout
+        android:id="@+id/rl_navigation_cover"
+        android:layout_width="match_parent"
+        android:layout_height="290dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/rl_navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/ll_down"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/skip_previous"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@color/blue"
+                    android:padding="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_prev_song" />
+
+                <ImageButton
+                    android:id="@+id/skip_next"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:background="@color/blue"
+                    android:padding="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_next_song" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_down"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@color/blue"
+                    android:padding="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_list_song" />
+
+                <ImageButton
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:background="@color/blue"
+                    android:padding="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_menu" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/play_pause"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/background_play"
+                android:padding="40dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_play" />
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/iv_cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/rl_navigation"
+            android:background="@color/black"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_default_art" />
+    </RelativeLayout>
+
+</RelativeLayout>
