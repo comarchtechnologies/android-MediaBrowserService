@@ -18,12 +18,18 @@
 * android auto -- very limitted SDK
 * ML -- empowering for developer although requires additional effort (certification)
 
+## brief technical overview of how mirrorlink apps work
+
+* screen mirroring
+* certified
+* ACMS + developer certificates
+
 # creating mirrorlink application
 
 ## let's create a music player
 
 * the existing sample by google 
-* baisc playback
+* basic playback
 * starting point for real application
 
 ## the structure of MirrorLink app
@@ -53,9 +59,21 @@
 
 ### *A couple of slides with implementation of Common API handling code*
 
+* connecting to ML server
+* setting audio context
+
 ### Functional changes
 
 * UI requirements --> this should be more than one slide
 * driver distraction
+* knob only evironment
+
+### new, better UI
+
+* why it is better
+  - large buttons & texts: easy to touch and read
+  - proper contrast values
 
 # summary
+
+* congratulations, you are a MirrorLink developer!
