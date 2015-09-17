@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2015 Comarch Technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +18,29 @@ package com.example.mirrorlink.comarch.mediabrowserservice;
 
 import android.app.Fragment;
 import android.content.ComponentName;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaDescription;
+import android.media.MediaMetadata;
+import android.media.MediaPlayer;
 import android.media.browse.MediaBrowser;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.mirrorlink.comarch.mediabrowserservice.utils.LogHelper;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A class that shows the Media Queue to the user.
@@ -39,6 +48,7 @@ import java.util.List;
 public class QueueFragment extends Fragment {
 
     private static final String TAG = LogHelper.makeLogTag(QueueFragment.class.getSimpleName());
+    private static Presenter presenter;
 
     private ImageButton mSkipNext;
     private ImageButton mSkipPrevious;
@@ -49,50 +59,54 @@ public class QueueFragment extends Fragment {
     private MediaController mMediaController;
     private PlaybackState mPlaybackState;
 
+    private ImageView mCover;
+    private TextView mTitle;
+    private TextView mAuthor;
+    private ProgressBar mProgressBar;
     private QueueAdapter mQueueAdapter;
 
     private MediaBrowser.ConnectionCallback mConnectionCallback =
             new MediaBrowser.ConnectionCallback() {
-        @Override
-        public void onConnected() {
-            LogHelper.d(TAG, "onConnected: session token ", mMediaBrowser.getSessionToken());
+                @Override
+                public void onConnected() {
+                    LogHelper.d(TAG, "onConnected: session token ", mMediaBrowser.getSessionToken());
 
-            if (mMediaBrowser.getSessionToken() == null) {
-                throw new IllegalArgumentException("No Session token");
-            }
+                    if (mMediaBrowser.getSessionToken() == null) {
+                        throw new IllegalArgumentException("No Session token");
+                    }
 
-            mMediaController = new MediaController(getActivity(),
-                    mMediaBrowser.getSessionToken());
-            mTransportControls = mMediaController.getTransportControls();
-            mMediaController.registerCallback(mSessionCallback);
+                    mMediaController = new MediaController(getActivity(),
+                            mMediaBrowser.getSessionToken());
+                    mTransportControls = mMediaController.getTransportControls();
+                    mMediaController.registerCallback(mSessionCallback);
 
-            getActivity().setMediaController(mMediaController);
-            mPlaybackState = mMediaController.getPlaybackState();
+                    getActivity().setMediaController(mMediaController);
+                    mPlaybackState = mMediaController.getPlaybackState();
 
-            List<MediaSession.QueueItem> queue = mMediaController.getQueue();
-            if (queue != null) {
-                mQueueAdapter.clear();
-                mQueueAdapter.notifyDataSetInvalidated();
-                mQueueAdapter.addAll(queue);
-                mQueueAdapter.notifyDataSetChanged();
-            }
-            onPlaybackStateChanged(mPlaybackState);
-        }
+                    List<MediaSession.QueueItem> queue = mMediaController.getQueue();
+                    if (queue != null) {
+                        mQueueAdapter.clear();
+                        mQueueAdapter.notifyDataSetInvalidated();
+                        mQueueAdapter.addAll(queue);
+                        mQueueAdapter.notifyDataSetChanged();
+                    }
+                    onPlaybackStateChanged(mPlaybackState);
+                }
 
-        @Override
-        public void onConnectionFailed() {
-            LogHelper.d(TAG, "onConnectionFailed");
-        }
+                @Override
+                public void onConnectionFailed() {
+                    LogHelper.d(TAG, "onConnectionFailed");
+                }
 
-        @Override
-        public void onConnectionSuspended() {
-            LogHelper.d(TAG, "onConnectionSuspended");
-            mMediaController.unregisterCallback(mSessionCallback);
-            mTransportControls = null;
-            mMediaController = null;
-            getActivity().setMediaController(null);
-        }
-    };
+                @Override
+                public void onConnectionSuspended() {
+                    LogHelper.d(TAG, "onConnectionSuspended");
+                    mMediaController.unregisterCallback(mSessionCallback);
+                    mTransportControls = null;
+                    mMediaController = null;
+                    getActivity().setMediaController(null);
+                }
+            };
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -124,15 +138,19 @@ public class QueueFragment extends Fragment {
             }
         }
     };
+    private MediaObserver observer;
 
     public static QueueFragment newInstance() {
-        return new QueueFragment();
+        QueueFragment queueFragment = new QueueFragment();
+        presenter = MusicPlayerActivity.presenter;
+        presenter.setQueueFragment(queueFragment);
+        return queueFragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_media_player, container, false);
 
         mSkipPrevious = (ImageButton) rootView.findViewById(R.id.skip_previous);
         mSkipPrevious.setEnabled(false);
@@ -146,23 +164,19 @@ public class QueueFragment extends Fragment {
         mPlayPause.setEnabled(true);
         mPlayPause.setOnClickListener(mButtonListener);
 
-        mQueueAdapter = new QueueAdapter(getActivity());
+        mCover = (ImageView) rootView.findViewById(R.id.iv_cover);
 
-        ListView mListView = (ListView) rootView.findViewById(R.id.list_view);
-        mListView.setAdapter(mQueueAdapter);
-        mListView.setFocusable(true);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MediaSession.QueueItem item = mQueueAdapter.getItem(position);
-                mTransportControls.skipToQueueItem(item.getQueueId());
-            }
-        });
+        mTitle = (TextView) rootView.findViewById(R.id.tv_title);
+
+        mAuthor = (TextView) rootView.findViewById(R.id.tv_author);
+
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+
+        mQueueAdapter = new QueueAdapter(getActivity());
 
         mMediaBrowser = new MediaBrowser(getActivity(),
                 new ComponentName(getActivity(), MusicService.class),
                 mConnectionCallback, null);
-
         return rootView;
     }
 
@@ -228,10 +242,13 @@ public class QueueFragment extends Fragment {
         LogHelper.d(TAG, statusBuilder.toString());
 
         if (enablePlay) {
+            mPlayPause.setBackgroundDrawable(getActivity().getDrawable(R.drawable.background_pause));
+
             mPlayPause.setImageDrawable(
-                    getActivity().getDrawable(R.drawable.ic_play_arrow_white_24dp));
+                    getActivity().getDrawable(R.drawable.ic_play));
         } else {
-            mPlayPause.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause_white_24dp));
+            mPlayPause.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause));
+            mPlayPause.setBackgroundDrawable(getActivity().getDrawable(R.drawable.background_play));
         }
 
         mSkipPrevious.setEnabled((state.getActions() & PlaybackState.ACTION_SKIP_TO_PREVIOUS) != 0);
@@ -288,8 +305,83 @@ public class QueueFragment extends Fragment {
     }
 
     private void skipToNext() {
+
         if (mTransportControls != null) {
             mTransportControls.skipToNext();
+        }
+    }
+
+    public void changeCover() {
+        MediaMetadata mediaMetadata = mMediaController.getMetadata();
+
+        if (mediaMetadata == null) {
+            return;
+        }
+
+        MediaDescription description = mediaMetadata.getDescription();
+        String fetchArtUrl = null;
+        Bitmap art = null;
+        if (description.getIconUri() != null) {
+            // This sample assumes the iconUri will be a valid URL formatted String, but
+            // it can actually be any valid Android Uri formatted String.
+            // async fetch the album art icon
+            String artUrl = description.getIconUri().toString();
+            art = AlbumArtCache.getInstance().getBigImage(artUrl);
+            if (art == null) {
+                fetchArtUrl = artUrl;
+                // use a placeholder art while the remote art is being downloaded
+                art = BitmapFactory.decodeResource(getResources(),
+                        R.drawable.ic_default_art);
+            }
+            mCover.setImageBitmap(art);
+        }
+        mTitle.setText(description.getTitle());
+        mAuthor.setText(description.getSubtitle());
+    }
+
+    public void runMedia() {
+        MediaPlayer mediaPlayer = presenter.getPlayback().getMediaPlayer();
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                observer.stop();
+                mProgressBar.setProgress(mp.getCurrentPosition());
+            }
+        });
+        if (observer != null) {
+            observer.stop();
+        }
+        observer = new MediaObserver();
+        new Thread(observer).start();
+    }
+
+    private class MediaObserver implements Runnable {
+        private AtomicBoolean stop = new AtomicBoolean(false);
+
+        public void stop() {
+            stop.set(true);
+        }
+
+        @Override
+        public void run() {
+            while (!stop.get()) {
+                MediaPlayer mediaPlayer = presenter.getPlayback().getMediaPlayer();
+                if (mediaPlayer == null) {
+                    this.stop();
+                }
+                if (mediaPlayer.getDuration() != 0) {
+                    mProgressBar.setMax(mediaPlayer.getDuration());
+                }
+                mProgressBar.setProgress(mediaPlayer.getCurrentPosition());
+                Log.d("QueueFragment", "duration=" + mediaPlayer.getDuration());
+                Log.d("QueueFragment", "currentPosition=" + mediaPlayer.getCurrentPosition());
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

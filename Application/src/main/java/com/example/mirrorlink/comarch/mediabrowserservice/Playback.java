@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2015 Comarch Technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +59,11 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
     // we don't have focus, but can duck (play at a low volume)
     private static final int AUDIO_NO_FOCUS_CAN_DUCK = 1;
     // we have full audio focus
-    private static final int AUDIO_FOCUSED  = 2;
+    private static final int AUDIO_FOCUSED = 2;
 
     private final MusicService mService;
     private final WifiManager.WifiLock mWifiLock;
+    private final Presenter presenter;
     private int mState;
     private boolean mPlayOnFocusGain;
     private Callback mCallback;
@@ -100,9 +102,14 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         // Create the Wifi lock (this does not acquire the lock, this just creates it)
         this.mWifiLock = ((WifiManager) service.getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "sample_lock");
+        presenter = MusicPlayerActivity.presenter;
     }
 
     public void start() {
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mMediaPlayer;
     }
 
     public void stop(boolean notifyListeners) {
@@ -289,8 +296,8 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
             // If we were playing when we lost focus, we need to resume playing.
             if (mPlayOnFocusGain) {
                 if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
-                    LogHelper.d(TAG,"configMediaPlayerState startMediaPlayer. seeking to ",
-                        mCurrentPosition);
+                    LogHelper.d(TAG, "configMediaPlayerState startMediaPlayer. seeking to ",
+                            mCurrentPosition);
                     if (mCurrentPosition == mMediaPlayer.getCurrentPosition()) {
                         mMediaPlayer.start();
                         mState = PlaybackState.STATE_PLAYING;
@@ -305,6 +312,11 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         if (mCallback != null) {
             mCallback.onPlaybackStatusChanged(mState);
         }
+        if (presenter != null) {
+            presenter.getQueueFragment().changeCover();
+            presenter.getQueueFragment().runMedia();
+        }
+
     }
 
     /**
@@ -407,7 +419,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
      * already exists.
      */
     private void createMediaPlayerIfNeeded() {
-        LogHelper.d(TAG, "createMediaPlayerIfNeeded. needed? ", (mMediaPlayer==null));
+        LogHelper.d(TAG, "createMediaPlayerIfNeeded. needed? ", (mMediaPlayer == null));
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
 
@@ -433,7 +445,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
      * "foreground service" status, the wake locks and possibly the MediaPlayer.
      *
      * @param releaseMediaPlayer Indicates whether the Media Player should also
-     *            be released or not
+     *                           be released or not
      */
     private void relaxResources(boolean releaseMediaPlayer) {
         LogHelper.d(TAG, "relaxResources. releaseMediaPlayer=", releaseMediaPlayer);
@@ -472,6 +484,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
          * On current music completed.
          */
         void onCompletion();
+
         /**
          * on Playback status changed
          * Implementations can use this callback to update

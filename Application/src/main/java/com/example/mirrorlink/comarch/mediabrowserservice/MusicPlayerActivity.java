@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2015 Comarch Technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +25,15 @@ import android.os.Bundle;
  */
 public class MusicPlayerActivity extends Activity
         implements BrowseFragment.FragmentDataHelper {
+    public static Presenter presenter;
+    private final String mMediaId = "__BY_GENRE__/Rock|-1679589699";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (presenter == null) {
+            presenter = new Presenter();
+        }
         setContentView(R.layout.activity_player);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -38,18 +44,17 @@ public class MusicPlayerActivity extends Activity
 
     @Override
     public void onMediaItemSelected(MediaBrowser.MediaItem item) {
-        if (item.isPlayable()) {
-            getMediaController().getTransportControls().playFromMediaId(item.getMediaId(), null);
-            QueueFragment queueFragment = QueueFragment.newInstance();
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, queueFragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (item.isBrowsable()) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, BrowseFragment.newInstance(item.getMediaId()))
-                    .addToBackStack(null)
-                    .commit();
-        }
+        getMediaController().getTransportControls().playFromMediaId(mMediaId, null);
+        QueueFragment queueFragment = QueueFragment.newInstance();
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, queueFragment)
+                .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        presenter.getPlayback().getMediaPlayer().stop();
+        finish();
     }
 }
