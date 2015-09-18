@@ -314,7 +314,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
         if (presenter != null) {
             presenter.getQueueFragment().changeCover();
-            presenter.getQueueFragment().runMedia();
+            presenter.getQueueFragment().runProgressBar();
         }
 
     }

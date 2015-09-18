@@ -16,10 +16,14 @@
  */
 package com.example.mirrorlink.comarch.mediabrowserservice;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.media.MediaDescription;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
@@ -54,6 +58,7 @@ public class QueueFragment extends Fragment {
     private ImageButton mSkipPrevious;
     private ImageButton mPlayPause;
 
+
     private MediaBrowser mMediaBrowser;
     private MediaController.TransportControls mTransportControls;
     private MediaController mMediaController;
@@ -62,6 +67,7 @@ public class QueueFragment extends Fragment {
     private ImageView mCover;
     private TextView mTitle;
     private TextView mAuthor;
+    private ProgressBar mWaitIndicator;
     private ProgressBar mProgressBar;
     private QueueAdapter mQueueAdapter;
 
@@ -164,13 +170,15 @@ public class QueueFragment extends Fragment {
         mPlayPause.setEnabled(true);
         mPlayPause.setOnClickListener(mButtonListener);
 
+        mWaitIndicator = (ProgressBar) rootView.findViewById(R.id.wait_indicator);
+
         mCover = (ImageView) rootView.findViewById(R.id.iv_cover);
 
         mTitle = (TextView) rootView.findViewById(R.id.tv_title);
 
         mAuthor = (TextView) rootView.findViewById(R.id.tv_author);
 
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
         mQueueAdapter = new QueueAdapter(getActivity());
 
@@ -186,11 +194,20 @@ public class QueueFragment extends Fragment {
         if (mMediaBrowser != null) {
             mMediaBrowser.connect();
         }
+        changeCover();
+        if(presenter.getPlayback().isPlaying())
+        {
+            runProgressBar();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if(observer!=null)
+        {
+            observer.stop();
+        }
         if (mMediaController != null) {
             mMediaController.unregisterCallback(mSessionCallback);
         }
@@ -207,20 +224,16 @@ public class QueueFragment extends Fragment {
         }
         mQueueAdapter.setActiveQueueItemId(state.getActiveQueueItemId());
         mQueueAdapter.notifyDataSetChanged();
-        boolean enablePlay = false;
         StringBuilder statusBuilder = new StringBuilder();
         switch (state.getState()) {
             case PlaybackState.STATE_PLAYING:
                 statusBuilder.append("playing");
-                enablePlay = false;
                 break;
             case PlaybackState.STATE_PAUSED:
                 statusBuilder.append("paused");
-                enablePlay = true;
                 break;
             case PlaybackState.STATE_STOPPED:
                 statusBuilder.append("ended");
-                enablePlay = true;
                 break;
             case PlaybackState.STATE_ERROR:
                 statusBuilder.append("error: ").append(state.getErrorMessage());
@@ -230,7 +243,6 @@ public class QueueFragment extends Fragment {
                 break;
             case PlaybackState.STATE_NONE:
                 statusBuilder.append("none");
-                enablePlay = false;
                 break;
             case PlaybackState.STATE_CONNECTING:
                 statusBuilder.append("connecting");
@@ -241,15 +253,7 @@ public class QueueFragment extends Fragment {
         statusBuilder.append(" -- At position: ").append(state.getPosition());
         LogHelper.d(TAG, statusBuilder.toString());
 
-        if (enablePlay) {
-            mPlayPause.setBackgroundDrawable(getActivity().getDrawable(R.drawable.background_pause));
-
-            mPlayPause.setImageDrawable(
-                    getActivity().getDrawable(R.drawable.ic_play));
-        } else {
-            mPlayPause.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause));
-            mPlayPause.setBackgroundDrawable(getActivity().getDrawable(R.drawable.background_play));
-        }
+        updateMediaButton(state.getState());
 
         mSkipPrevious.setEnabled((state.getActions() & PlaybackState.ACTION_SKIP_TO_PREVIOUS) != 0);
         mSkipNext.setEnabled((state.getActions() & PlaybackState.ACTION_SKIP_TO_NEXT) != 0);
@@ -257,6 +261,33 @@ public class QueueFragment extends Fragment {
         LogHelper.d(TAG, "Queue From MediaController *** Title " +
                 mMediaController.getQueueTitle() + "\n: Queue: " + mMediaController.getQueue() +
                 "\n Metadata " + mMediaController.getMetadata());
+    }
+
+    private void updateMediaButton(int playbackState) {
+        final boolean waitIndicatorVisible
+                =  playbackState == PlaybackState.STATE_BUFFERING
+                || playbackState == PlaybackState.STATE_CONNECTING
+                || playbackState == PlaybackState.STATE_NONE
+                || playbackState == PlaybackState.STATE_ERROR
+                || playbackState == PlaybackState.STATE_STOPPED
+                ;
+
+        mWaitIndicator.setVisibility(waitIndicatorVisible ? View.VISIBLE : View.INVISIBLE);
+        mWaitIndicator.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+
+        final boolean isPlaying = playbackState == PlaybackState.STATE_PLAYING;
+        mPlayPause.setImageDrawable(getMediaButtonIcon(isPlaying, waitIndicatorVisible));
+    }
+
+    private Drawable getMediaButtonIcon(boolean isPlaying, boolean waiting) {
+        final Activity activity = getActivity();
+        if (waiting) {
+            return null;
+        } else if (isPlaying) {
+            return activity.getDrawable(R.drawable.ic_pause);
+        } else {
+            return activity.getDrawable(R.drawable.ic_play);
+        }
     }
 
     private View.OnClickListener mButtonListener = new View.OnClickListener() {
@@ -312,11 +343,10 @@ public class QueueFragment extends Fragment {
     }
 
     public void changeCover() {
-        MediaMetadata mediaMetadata = mMediaController.getMetadata();
-
-        if (mediaMetadata == null) {
+        if (mMediaController == null) {
             return;
         }
+        MediaMetadata mediaMetadata = mMediaController.getMetadata();
 
         MediaDescription description = mediaMetadata.getDescription();
         String fetchArtUrl = null;
@@ -339,14 +369,14 @@ public class QueueFragment extends Fragment {
         mAuthor.setText(description.getSubtitle());
     }
 
-    public void runMedia() {
+    public void runProgressBar() {
         MediaPlayer mediaPlayer = presenter.getPlayback().getMediaPlayer();
-
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 observer.stop();
                 mProgressBar.setProgress(mp.getCurrentPosition());
+                skipToNext();
             }
         });
         if (observer != null) {
@@ -369,13 +399,14 @@ public class QueueFragment extends Fragment {
                 MediaPlayer mediaPlayer = presenter.getPlayback().getMediaPlayer();
                 if (mediaPlayer == null) {
                     this.stop();
+                    return;
                 }
-                if (mediaPlayer.getDuration() != 0) {
+                if (mediaPlayer.isPlaying()) {
                     mProgressBar.setMax(mediaPlayer.getDuration());
+                    mProgressBar.setProgress(mediaPlayer.getCurrentPosition());
+                    Log.d("QueueFragment", "duration=" + mediaPlayer.getDuration());
+                    Log.d("QueueFragment", "currentPosition=" + mediaPlayer.getCurrentPosition());
                 }
-                mProgressBar.setProgress(mediaPlayer.getCurrentPosition());
-                Log.d("QueueFragment", "duration=" + mediaPlayer.getDuration());
-                Log.d("QueueFragment", "currentPosition=" + mediaPlayer.getCurrentPosition());
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
