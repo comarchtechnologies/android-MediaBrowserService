@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<certificate>
+  <version>
+    <majorVersion>1</majorVersion>
+    <minorVersion>0</minorVersion>
+  </version>
+  <appIdentifier>6Pz3exE-7SVTJXzMKgtMYeK3ppF0er0pnvqL4AHUZf4</appIdentifier>
+  <appListEntry>
+    <name>Comarch Media Player</name>
+    <providerName>Comarch</providerName>
+    <providerURL>http://comarch.com</providerURL>
+    <description>Comarch</description>
+    <appInfo>
+      <appCategory>0x00030001</appCategory>
+    </appInfo>
+    <displayInfo>
+      <contentCategory>0x00000020</contentCategory>
+      <orientation>landscape</orientation>
+    </displayInfo>
+    <audioInfo>
+      <audioType>all</audioType>
+      <contentCategory>0x80000000</contentCategory>
+    </audioInfo>
+  </appListEntry>
+  <appCertInfoEntry>
+    <appUUID>uuid:2fac1234-31f8-11b4-a222-08002a34cff3</appUUID>
+    <entity>
+      <name>DEVELOPER</name>
+      <targetList>
+        <target/>
+      </targetList>
+      <restricted>EU,EPE,CAN,USA,AMERICA,AUS,KOR,JPN,CHN,HKG,TPE,IND,APAC,AFRICA,WORLD</restricted>
+      <nonRestricted>EU,EPE,CAN,USA,AMERICA,AUS,KOR,JPN,CHN,HKG,TPE,IND,APAC,AFRICA,WORLD</nonRestricted>
+    </entity>
+    <properties/>
+  </appCertInfoEntry>
+  <serverProperties>
+    <platform>
+      <platformID>Android</platformID>
+      <blacklistedPlatformVersions/>
+      <runtimeID>Native</runtimeID>
+      <blacklistedRuntimeVersions/>
+    </platform>
+  </serverProperties>
+</certificate>
