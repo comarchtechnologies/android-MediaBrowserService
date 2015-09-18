@@ -19,8 +19,10 @@ package com.example.mirrorlink.comarch.mediabrowserservice;
 import android.app.Activity;
 import android.media.browse.MediaBrowser;
 import android.os.Bundle;
-
 import android.view.View;
+
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.MirrorLinkHelper;
+
 /**
  * Main activity for the music player.
  */
@@ -61,6 +63,9 @@ public class MusicPlayerActivity extends Activity
                     .add(R.id.container, BrowseFragment.newInstance(null))
                     .commit();
         }
+
+        CommonApiConnection connection = new CommonApiConnection(getPackageName());
+        MirrorLinkHelper.connectMirrorLinkService(getApplication(), connection);
     }
 
     @Override
