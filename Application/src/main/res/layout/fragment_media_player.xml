@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
+    android:orientation="vertical"
     android:background="@color/black"
-    android:orientation="vertical">
+    >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/progressBar"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:gravity="center_vertical"
+        android:layout_height="64dp"
         android:orientation="horizontal"
-        android:layout_alignParentTop="true">
+        android:padding="10dp"
+        android:gravity="center_vertical"
+        >
 
         <!-- Please notice that text size is set manually and is in dp not sp.
              Text has to be always large enough, regardless user's settings,
@@ -27,7 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="32dp"
-            android:textColor="#fff"
+            android:textColor="@color/white"
+            android:text="@string/loading_part1"
             tools:ignore="SpUsage"
             />
 
@@ -37,20 +37,21 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:textSize="32dp"
-            android:textColor="#fff"
+            android:textColor="@color/azure"
+            android:text="@string/loading_part2"
+            android:layout_marginLeft="10dp"
             tools:ignore="SpUsage"
             />
-    </RelativeLayout>
+    </LinearLayout>
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:layout_above="@+id/rl_navigation_cover"
-        android:layout_alignParentLeft="true"
         android:layout_marginBottom="10dp"
-        android:progressDrawable="@drawable/custom_progress_bar" />
+        android:progressDrawable="@drawable/custom_progress_bar"
+        />
 
     <RelativeLayout
         android:id="@+id/rl_navigation_cover"
@@ -121,14 +122,23 @@
 
             <ImageButton
                 android:id="@+id/play_pause"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 android:layout_centerInParent="true"
                 android:layout_marginRight="10dp"
-                android:background="@drawable/background_play"
+                android:background="@drawable/background_media_button"
                 android:padding="40dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_play" />
+
+            <ProgressBar
+                style="@android:style/Widget.Material.ProgressBar.Large"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/wait_indicator"
+                android:layout_centerInParent="true"
+                android:visibility="visible"
+                />
 
         </RelativeLayout>
 
@@ -142,4 +152,4 @@
             android:src="@drawable/ic_default_art" />
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

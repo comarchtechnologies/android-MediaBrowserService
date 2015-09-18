@@ -31,4 +31,7 @@
     <string name="skip_next">Skip to next</string>
     <string name="no_search_results">No search results.</string>
 
+    <string name="loading_part1">Loading,</string>
+    <string name="loading_part2">please wait…</string>
+
 </resources>
