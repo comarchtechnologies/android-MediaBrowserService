@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
@@ -17,18 +18,28 @@
         android:orientation="horizontal"
         android:layout_alignParentTop="true">
 
+        <!-- Please notice that text size is set manually and is in dp not sp.
+             Text has to be always large enough, regardless user's settings,
+             so sp could not be used.
+        -->
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textSize="32dp"
+            android:textColor="#fff"
+            tools:ignore="SpUsage"
+            />
 
         <TextView
             android:id="@+id/tv_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textSize="32dp"
+            android:textColor="#fff"
+            tools:ignore="SpUsage"
+            />
     </RelativeLayout>
 
     <ProgressBar
