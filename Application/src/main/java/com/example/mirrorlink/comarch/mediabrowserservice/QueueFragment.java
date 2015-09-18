@@ -49,7 +49,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A class that shows the Media Queue to the user.
  */
-public class QueueFragment extends Fragment {
+public class QueueFragment extends Fragment
+        implements CommonApiConnection.OnAudioPauseRequestedListener {
 
     private static final String TAG = LogHelper.makeLogTag(QueueFragment.class.getSimpleName());
     private static Presenter presenter;
@@ -58,6 +59,7 @@ public class QueueFragment extends Fragment {
     private ImageButton mSkipPrevious;
     private ImageButton mPlayPause;
 
+    private CommonApiConnection mApiConnection;
 
     private MediaBrowser mMediaBrowser;
     private MediaController.TransportControls mTransportControls;
@@ -151,6 +153,10 @@ public class QueueFragment extends Fragment {
         presenter = MusicPlayerActivity.presenter;
         presenter.setQueueFragment(queueFragment);
         return queueFragment;
+    }
+
+    public void setCommonApiConnection(CommonApiConnection connection) {
+        mApiConnection = connection;
     }
 
     @Override
@@ -254,6 +260,7 @@ public class QueueFragment extends Fragment {
         LogHelper.d(TAG, statusBuilder.toString());
 
         updateMediaButton(state.getState());
+        notifyCommonApi(state.getState());
 
         mSkipPrevious.setEnabled((state.getActions() & PlaybackState.ACTION_SKIP_TO_PREVIOUS) != 0);
         mSkipNext.setEnabled((state.getActions() & PlaybackState.ACTION_SKIP_TO_NEXT) != 0);
@@ -261,6 +268,13 @@ public class QueueFragment extends Fragment {
         LogHelper.d(TAG, "Queue From MediaController *** Title " +
                 mMediaController.getQueueTitle() + "\n: Queue: " + mMediaController.getQueue() +
                 "\n Metadata " + mMediaController.getMetadata());
+    }
+
+    private void notifyCommonApi(int state) {
+        if (mApiConnection != null && mApiConnection.isConnected()) {
+            final boolean isPlaying = state == PlaybackState.STATE_PLAYING;
+            mApiConnection.setAudioContext(isPlaying);
+        }
     }
 
     private void updateMediaButton(int playbackState) {
@@ -384,6 +398,13 @@ public class QueueFragment extends Fragment {
         }
         observer = new MediaObserver();
         new Thread(observer).start();
+    }
+
+    @Override
+    public void audioPauseRequested() {
+        if (mTransportControls != null) {
+            mTransportControls.pause();
+        }
     }
 
     private class MediaObserver implements Runnable {

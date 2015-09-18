@@ -31,6 +31,7 @@ public class MusicPlayerActivity extends Activity
     public static Presenter presenter;
     private final String mMediaId = "__BY_GENRE__/Rock|-1679589699";
 
+    private CommonApiConnection mConnection;
 
     /* Enable immersive mode (hide software buttons on the bottom of the screen).
      * This is considered to be a good MirrorLink app practice since the head unit
@@ -64,14 +65,18 @@ public class MusicPlayerActivity extends Activity
                     .commit();
         }
 
-        CommonApiConnection connection = new CommonApiConnection(getPackageName());
-        MirrorLinkHelper.connectMirrorLinkService(getApplication(), connection);
+        mConnection = new CommonApiConnection(getPackageName());
+        MirrorLinkHelper.connectMirrorLinkService(getApplication(), mConnection);
     }
 
     @Override
     public void onMediaItemSelected(MediaBrowser.MediaItem item) {
         getMediaController().getTransportControls().playFromMediaId(mMediaId, null);
+
         QueueFragment queueFragment = QueueFragment.newInstance();
+        mConnection.setAudioPauseRequestListener(queueFragment);
+        queueFragment.setCommonApiConnection(mConnection);
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, queueFragment)
                 .commit();
