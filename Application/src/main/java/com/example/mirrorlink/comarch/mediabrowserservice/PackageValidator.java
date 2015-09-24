@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.mediabrowserservice;
+package com.example.mirrorlink.comarch.mediabrowserservice;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -22,7 +22,7 @@ import android.content.res.XmlResourceParser;
 import android.os.Process;
 import android.util.Base64;
 
-import com.example.android.mediabrowserservice.utils.LogHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.LogHelper;
 
 import org.xmlpull.v1.XmlPullParserException;
 

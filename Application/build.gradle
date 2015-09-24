@@ -33,6 +33,7 @@ android {
     buildToolsVersion "23.0.0"
 
     defaultConfig {
+        applicationId 'com.example.mirrorlink.comarch.mediabrowserservice'
         minSdkVersion 21
         targetSdkVersion 23
     }

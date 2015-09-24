@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.example.android.mediabrowserservice.utils;
+package com.example.mirrorlink.comarch.mediabrowserservice.utils;
 
 import android.media.MediaMetadata;
 import android.media.session.MediaSession;
 
-import com.example.android.mediabrowserservice.model.MusicProvider;
+import com.example.mirrorlink.comarch.mediabrowserservice.model.MusicProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.example.android.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE;
-import static com.example.android.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_SEARCH;
-
+import static com.example.mirrorlink.comarch.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE;
+import static com.example.mirrorlink.comarch.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_SEARCH;
 /**
  * Utility class to help on queue related tasks.
  */

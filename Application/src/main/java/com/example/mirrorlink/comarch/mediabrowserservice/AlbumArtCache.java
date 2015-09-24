@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.example.android.mediabrowserservice;
+package com.example.mirrorlink.comarch.mediabrowserservice;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.LruCache;
 
-import com.example.android.mediabrowserservice.utils.BitmapHelper;
-import com.example.android.mediabrowserservice.utils.LogHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.BitmapHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.LogHelper;
 
 import java.io.IOException;
 
@@ -96,7 +96,7 @@ public final class AlbumArtCache {
                 Bitmap[] bitmaps;
                 try {
                     Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl,
-                        MAX_ART_WIDTH, MAX_ART_HEIGHT);
+                            MAX_ART_WIDTH, MAX_ART_HEIGHT);
                     Bitmap icon = BitmapHelper.scaleBitmap(bitmap,
                         MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
                     bitmaps = new Bitmap[] {bitmap, icon};

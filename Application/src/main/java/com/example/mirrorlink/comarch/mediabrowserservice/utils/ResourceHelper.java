@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.example.android.mediabrowserservice.utils;
+package com.example.mirrorlink.comarch.mediabrowserservice.utils;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;

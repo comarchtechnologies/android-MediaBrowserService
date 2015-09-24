@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.example.android.mediabrowserservice.model;
+package com.example.mirrorlink.comarch.mediabrowserservice.model;
 
 import android.media.MediaMetadata;
 import android.os.AsyncTask;
 
-import com.example.android.mediabrowserservice.utils.LogHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.LogHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;

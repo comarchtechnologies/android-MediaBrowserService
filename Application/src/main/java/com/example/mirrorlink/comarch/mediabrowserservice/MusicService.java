@@ -14,39 +14,40 @@
  * limitations under the License.
  */
 
-package com.example.android.mediabrowserservice;
+package com.example.mirrorlink.comarch.mediabrowserservice;
 
  import android.app.PendingIntent;
- import android.content.Context;
- import android.content.Intent;
- import android.graphics.Bitmap;
- import android.media.MediaDescription;
- import android.media.MediaMetadata;
- import android.media.browse.MediaBrowser.MediaItem;
- import android.media.session.MediaSession;
- import android.media.session.PlaybackState;
- import android.net.Uri;
- import android.os.Bundle;
- import android.os.Handler;
- import android.os.Message;
- import android.os.SystemClock;
- import android.service.media.MediaBrowserService;
- import android.text.TextUtils;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.MediaDescription;
+import android.media.MediaMetadata;
+import android.media.browse.MediaBrowser.MediaItem;
+import android.media.session.MediaSession;
+import android.media.session.PlaybackState;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.service.media.MediaBrowserService;
+import android.text.TextUtils;
 
- import com.example.android.mediabrowserservice.model.MusicProvider;
- import com.example.android.mediabrowserservice.utils.CarHelper;
- import com.example.android.mediabrowserservice.utils.LogHelper;
- import com.example.android.mediabrowserservice.utils.MediaIDHelper;
- import com.example.android.mediabrowserservice.utils.QueueHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.model.MusicProvider;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.CarHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.LogHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.MediaIDHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.QueueHelper;
 
- import java.lang.ref.WeakReference;
- import java.util.ArrayList;
- import java.util.Collections;
- import java.util.List;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
- import static com.example.android.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE;
- import static com.example.android.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_ROOT;
- import static com.example.android.mediabrowserservice.utils.MediaIDHelper.createBrowseCategoryMediaID;
+import static com.example.mirrorlink.comarch.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE;
+import static com.example.mirrorlink.comarch.mediabrowserservice.utils.MediaIDHelper.MEDIA_ID_ROOT;
+import static com.example.mirrorlink.comarch.mediabrowserservice.utils.MediaIDHelper.createBrowseCategoryMediaID;
+
 
  /**
   * This class provides a MediaBrowser through a service. It exposes the media library to a browsing
@@ -276,7 +277,7 @@ package com.example.android.mediabrowserservice;
                          .setMediaId(MEDIA_ID_MUSICS_BY_GENRE)
                          .setTitle(getString(R.string.browse_genres))
                          .setIconUri(Uri.parse("android.resource://" +
-                             "com.example.android.mediabrowserservice/drawable/ic_by_genre"))
+                             "com.example.mirrorlink.comarch.mediabrowserservice/drawable/ic_by_genre"))
                          .setSubtitle(getString(R.string.browse_genre_subtitle))
                          .build(), MediaItem.FLAG_BROWSABLE
              ));

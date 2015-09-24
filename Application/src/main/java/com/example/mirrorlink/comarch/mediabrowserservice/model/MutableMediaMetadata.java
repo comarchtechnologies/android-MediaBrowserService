@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.mediabrowserservice.model;
+package com.example.mirrorlink.comarch.mediabrowserservice.model;
 
 import android.media.MediaMetadata;
 import android.text.TextUtils;

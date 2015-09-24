@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.mediabrowserservice;
+package com.example.mirrorlink.comarch.mediabrowserservice;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,9 +27,9 @@ import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.text.TextUtils;
 
-import com.example.android.mediabrowserservice.model.MusicProvider;
-import com.example.android.mediabrowserservice.utils.LogHelper;
-import com.example.android.mediabrowserservice.utils.MediaIDHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.model.MusicProvider;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.LogHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.MediaIDHelper;
 
 import java.io.IOException;
 

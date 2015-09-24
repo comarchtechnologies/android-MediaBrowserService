@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.mediabrowserservice;
+package com.example.mirrorlink.comarch.mediabrowserservice;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -32,8 +32,9 @@ import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 
-import com.example.android.mediabrowserservice.utils.LogHelper;
-import com.example.android.mediabrowserservice.utils.ResourceHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.LogHelper;
+import com.example.mirrorlink.comarch.mediabrowserservice.utils.ResourceHelper;
+
 
 /**
  * Keeps track of a notification and updates it automatically for a given
@@ -75,7 +76,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         updateSessionToken();
 
         mNotificationColor = ResourceHelper.getThemeColor(mService,
-            android.R.attr.colorPrimary, Color.DKGRAY);
+                android.R.attr.colorPrimary, Color.DKGRAY);
 
         mNotificationManager = (NotificationManager) mService
                 .getSystemService(Context.NOTIFICATION_SERVICE);
